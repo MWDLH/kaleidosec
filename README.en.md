@@ -28,7 +28,7 @@ In short: it gives an AI agent an operating system for real penetration testing.
 | :repeat: **Tool cycling** — swaps tools on failure without diagnosing the cause | 8-layer failure classification (execution / environment / access / reachability / method / prerequisite / hypothesis / route value) — changes one variable at a time |
 | :newspaper: **Alert = finding** — reports every scanner output as confirmed | Evidence grading (fact / inference / hypothesis / unknown / rejected) — a fingerprint or CVE match is not a confirmed vulnerability |
 | :dizzy_face: **Cross-domain amnesia** — restarts discovery after every pivot | Module stack + parent-path return protocol — carries identity, network position, evidence, and objective across domains |
-| :tunnel: **Tunnel vision** — drills one path indefinitely | Four-state path management (active / deep_dive / parked / closed) — parks low-value paths with a reactivation condition |
+| :dart: **Tunnel vision** — drills one path indefinitely | Four-state path management (active / deep_dive / parked / closed) — parks low-value paths with a reactivation condition |
 | :shrug: **Decision black box** — can't explain why this step was chosen | Every action outputs: current judgment, key evidence, critical unknowns, why this step ranks first, and what to change on failure |
 
 ---

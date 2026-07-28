@@ -45,7 +45,7 @@ Where am I? → What do I know? → What's the best path?
 
 It does this through four mechanisms that no other pentest Skill provides:
 
-:compass: **Evidence-driven decisions** — Every action is justified by confirmed facts, not tool availability. `"I'm doing X because we observed Y, and the unknown Z could change the route."`
+:compass: **Evidence-driven decisions** — Every action is justified by confirmed facts, not tool availability. "I'm doing X because we observed Y, and the unknown Z could change the route."
 
 :fork_and_knife: **Attack path management** — Paths are tracked, ranked, deepened, parked, or closed. No tunnel vision. No checklist-driven shallowness.
 
@@ -81,22 +81,22 @@ Each step was chosen because evidence supported it, not because a checklist said
 
 | Domain | Coverage |
 |---|---|
-| :globe_with_meridians: **Web/API** | SQLi, XSS, CSRF, SSRF, SSTI, Deserialization, JWT, OAuth, GraphQL, Race Conditions, File Upload, Command Injection |
-| :iphone: **Mobile** | Android Components, iOS Keychain & ATS, WebView, Deep Links, Certificate Pinning, Backend API |
-| :busts_in_silhouette: **Internal/AD** | Kerberos, ACL Abuse, AD CS, Lateral Movement, Credential Dumping, LOLBin, Trust Hopping |
-| :cloud: **Cloud/Container** | AWS/Azure/GCP IAM, IMDS, K8s RBAC, Container Escape, Serverless, Storage Exposure |
-| :robot: **AI Security** | Prompt Injection, Tool Calling, RAG Poisoning, File & URL Processing, Model Supply Chain |
-| :package: **Supply Chain** | CI/CD Pipelines, OIDC, Dependency Confusion, Runner Takeover, IaC, Registries |
-| :satellite: **Mini-Program** | wx.login Trust Chain, Cloud Functions, WebView, Payment Logic, Platform Identity |
-| :desktop_computer: **Infrastructure** | Redis/MongoDB/ES, VPN, Default Credentials, Thick Clients, Network Appliances |
+| **Web/API** | SQLi, XSS, CSRF, SSRF, SSTI, Deserialization, JWT, OAuth, GraphQL, Race Conditions, File Upload, Command Injection |
+| **Mobile** | Android Components, iOS Keychain & ATS, WebView Attacks, Deep Links, Certificate Pinning, Backend API Testing |
+| **Internal/AD** | Kerberos Attacks, ACL Abuse, AD CS, Lateral Movement, Credential Dumping, LOLBin, Trust Hopping |
+| **Cloud/Container** | AWS / Azure / GCP IAM Escalation, IMDS, K8s RBAC, Container Escape, Serverless, Storage Exposure |
+| **AI Security** | Prompt Injection, Tool Calling Abuse, RAG Poisoning, File & URL Processing, Model Supply Chain |
+| **Supply Chain** | CI/CD Pipeline Attacks, OIDC Abuse, Dependency Confusion, Runner Takeover, IaC Analysis, Registries |
+| **Mini-Program** | wx.login Trust Chain, Cloud Function Authorization, WebView Attacks, Payment Logic, Platform Identity |
+| **Infrastructure** | Redis / MongoDB / ES Unauthenticated Access, VPN, Default Credentials, Thick Clients, Network Appliances |
 
 | Capability | Coverage |
 |---|---|
-| :microscope: **Code Audit** | Java/PHP/Python/JS/Go/C# Sink Patterns, Source-to-Sink Data-Flow Analysis |
-| :wrench: **Reverse & Protocol** | Native Binary, Java/.NET Decompilation, Frida Runtime Hooking, Custom Protocol Analysis |
-| :test_tube: **PoC Development** | Bounded Exploit Validation, Failure Debugging, Tool Engineering, PoC Templates |
-| :bust_in_silhouette: **Identity & Network** | Credential Type Reference, Tunneling & Pivoting, Network Position Modeling |
-| :shield: **Evasion** | AMSI/AppLocker/LSA Protection Diagnosis, EDR Behavioral Detection Awareness |
+| **Code Audit** | Sink patterns for Java / PHP / Python / JS / Go / C#, source-to-sink data-flow tracing, codebase audit workflow |
+| **Reverse & Protocol** | Native binary analysis, Java / .NET decompilation, Frida runtime hooking, custom protocol format & state machine analysis |
+| **PoC Development** | Bounded exploit validation scripts, failure diagnosis & debugging, PoC templates by vulnerability class |
+| **Identity & Network** | 14 credential-type quick reference, tunneling & pivoting matrix, network position modeling & credential prioritization |
+| **Evasion** | AMSI / AppLocker / LSA Protection diagnosis & bypass, EDR behavioral detection awareness, constrained environment adaptation |
 
 ---
 
@@ -125,8 +125,8 @@ Restart your client after installation. Keep the directory intact — internal r
 ```
 Use $pentest-field-operator.
 
-Objective: determine whether this low-privilege domain account can
-reach a material security outcome.
+Objective: determine whether this low-privilege domain account can reach
+a material security outcome.
 Scope: lab.example.internal and the 12 hosts listed below.
 Authorization: L0-L2 are pre-authorized; no persistence.
 Current access: VPN, one domain user account.

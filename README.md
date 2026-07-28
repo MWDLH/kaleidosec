@@ -81,22 +81,22 @@ Agent [加载 Skill 后]：
 
 | 攻击面 | 覆盖内容 |
 |---|---|
-| :globe_with_meridians: **Web/API** | SQL注入、XSS、CSRF、SSRF、SSTI、反序列化、JWT、OAuth、GraphQL、竞态条件、文件上传、命令注入 |
-| :iphone: **移动端** | Android 组件、iOS 钥匙串与 ATS、WebView 攻击、深度链接、证书固定绕过、后端 API 测试 |
-| :busts_in_silhouette: **内网/AD** | Kerberos 攻击、ACL 滥用、AD CS、横向移动、凭据提取、LOLBin、域信任跳跃 |
-| :cloud: **云/容器** | AWS/Azure/GCP IAM 提权、元数据服务、K8s RBAC、容器逃逸、Serverless、存储暴露 |
-| :robot: **AI 安全** | Prompt 注入、工具调用滥用、RAG 中毒、文件与 URL 处理、模型供应链 |
-| :package: **供应链** | CI/CD 管道攻击、OIDC 滥用、依赖混淆、Runner 劫持、IaC 分析、制品注册表 |
-| :satellite: **小程序** | wx.login 信任链、云函数授权、WebView 攻击、支付逻辑、平台身份 |
-| :desktop_computer: **基础设施** | Redis/MongoDB/ES 未授权、VPN、默认凭据、厚客户端、网络设备 |
+| **Web/API** | SQL 注入、XSS、CSRF、SSRF、SSTI、反序列化、JWT、OAuth、GraphQL、竞态条件、文件上传、命令注入 |
+| **移动端** | Android 组件、iOS 钥匙串与 ATS、WebView 攻击、深度链接、证书固定绕过、后端 API 测试 |
+| **内网/AD** | Kerberos 攻击、ACL 滥用、AD CS、横向移动、凭据提取、LOLBin、域信任跳跃 |
+| **云/容器** | AWS / Azure / GCP IAM 提权、元数据服务、K8s RBAC、容器逃逸、Serverless、存储暴露 |
+| **AI 安全** | Prompt 注入、工具调用滥用、RAG 中毒、文件与 URL 处理、模型供应链 |
+| **供应链** | CI/CD 管道攻击、OIDC 滥用、依赖混淆、Runner 劫持、IaC 分析、制品注册表 |
+| **小程序** | wx.login 信任链、云函数授权、WebView 攻击、支付逻辑、平台身份 |
+| **基础设施** | Redis / MongoDB / ES 未授权、VPN、默认凭据、厚客户端、网络设备 |
 
 | 通用能力 | 覆盖内容 |
 |---|---|
-| :microscope: **代码审计** | Java/PHP/Python/JS/Go/C# Sink 清单，Source-to-Sink 数据流分析 |
-| :wrench: **逆向与协议** | 原生二进制、Java/.NET 反编译、Frida 运行时 Hook、自定义协议分析 |
-| :test_tube: **PoC 开发** | 有边界的漏洞验证、失败调试、工具工程、PoC 代码模板 |
-| :bust_in_silhouette: **身份与网络** | 凭据类型速查、隧道与跳板、网络位置建模、凭据优先级评估 |
-| :shield: **防御规避** | AMSI/AppLocker/LSA Protection 诊断与绕过、EDR 行为检测理解 |
+| **代码审计** | 覆盖 Java / PHP / Python / JS / Go / C# 六种语言的 Sink 清单，Source-to-Sink 数据流追踪与代码库审计流程 |
+| **逆向与协议** | 原生二进制、Java / .NET 反编译、Frida 运行时 Hook、自定义协议格式与状态机分析 |
+| **PoC 开发** | 有边界的漏洞验证脚本、失败诊断与调试、按漏洞类型提供的 PoC 代码模板与工具选择 |
+| **身份与网络** | 14 种凭据类型速查表、隧道与跳板模式矩阵、网络位置建模与凭据优先级评估 |
+| **防御规避** | AMSI / AppLocker / LSA Protection 诊断与绕过、EDR 行为检测理解与受控环境适配 |
 
 ---
 

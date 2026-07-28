@@ -79,17 +79,24 @@ Agent [加载 Skill 后]：
 
 **8 个攻击面、5 个通用能力。** 卡片按证据按需加载，Agent 不会把目录当清单遍历。
 
-| :globe_with_meridians: Web/API | :iphone: 移动端 | :busts_in_silhouette: 内网/AD |
-|---|---|---|
-| SQL注入/XSS/CSRF/SSRF/SSTI/反序列化/JWT/OAuth/GraphQL/竞态 | Android组件/iOS钥匙串/ATS/WebView/深度链接/证书固定 | Kerberos/ACL滥用/AD CS/横向移动/凭据提取/域信任跳跃 |
+| 攻击面 | 覆盖内容 |
+|---|---|
+| :globe_with_meridians: **Web/API** | SQL注入、XSS、CSRF、SSRF、SSTI、反序列化、JWT、OAuth、GraphQL、竞态条件、文件上传、命令注入 |
+| :iphone: **移动端** | Android 组件、iOS 钥匙串与 ATS、WebView 攻击、深度链接、证书固定绕过、后端 API 测试 |
+| :busts_in_silhouette: **内网/AD** | Kerberos 攻击、ACL 滥用、AD CS、横向移动、凭据提取、LOLBin、域信任跳跃 |
+| :cloud: **云/容器** | AWS/Azure/GCP IAM 提权、元数据服务、K8s RBAC、容器逃逸、Serverless、存储暴露 |
+| :robot: **AI 安全** | Prompt 注入、工具调用滥用、RAG 中毒、文件与 URL 处理、模型供应链 |
+| :package: **供应链** | CI/CD 管道攻击、OIDC 滥用、依赖混淆、Runner 劫持、IaC 分析、制品注册表 |
+| :satellite: **小程序** | wx.login 信任链、云函数授权、WebView 攻击、支付逻辑、平台身份 |
+| :desktop_computer: **基础设施** | Redis/MongoDB/ES 未授权、VPN、默认凭据、厚客户端、网络设备 |
 
-| :cloud: 云/容器 | :robot: AI安全 | :package: 供应链 |
-|---|---|---|
-| AWS/Azure/GCP IAM提权/元数据服务/K8s RBAC/容器逃逸/Serverless | Prompt注入/工具调用滥用/RAG中毒/文件URL处理 | CI/CD管道/OIDC滥用/依赖混淆/Runner劫持/IaC |
-
-| :satellite: 小程序 | :desktop_computer: 基础设施 | :wrench: 通用能力 |
-|---|---|---|
-| wx.login信任链/云函数/WebView/支付逻辑 | Redis/MongoDB/ES未授权/VPN/厚客户端/默认凭据 | 代码审计/逆向工程/PoC开发/防御规避/身份分析 |
+| 通用能力 | 覆盖内容 |
+|---|---|
+| :microscope: **代码审计** | Java/PHP/Python/JS/Go/C# Sink 清单，Source-to-Sink 数据流分析 |
+| :wrench: **逆向与协议** | 原生二进制、Java/.NET 反编译、Frida 运行时 Hook、自定义协议分析 |
+| :test_tube: **PoC 开发** | 有边界的漏洞验证、失败调试、工具工程、PoC 代码模板 |
+| :bust_in_silhouette: **身份与网络** | 凭据类型速查、隧道与跳板、网络位置建模、凭据优先级评估 |
+| :shield: **防御规避** | AMSI/AppLocker/LSA Protection 诊断与绕过、EDR 行为检测理解 |
 
 ---
 

@@ -79,17 +79,24 @@ Each step was chosen because evidence supported it, not because a checklist said
 
 **8 attack surfaces. 5 cross-cutting capabilities.** Cards load only when evidence supports them — the agent never traverses directories as a checklist.
 
-| :globe_with_meridians: Web/API | :iphone: Mobile | :busts_in_silhouette: Internal/AD |
-|---|---|---|
-| SQLi, XSS, CSRF, SSRF, SSTI, Deserialization, JWT, OAuth, GraphQL, Race Conditions | Android components, iOS Keychain/ATS, WebView, Deep Links, Certificate Pinning | Kerberos, ACL abuse, AD CS, Lateral Movement, Credential Dumping, Trust Hopping |
+| Domain | Coverage |
+|---|---|
+| :globe_with_meridians: **Web/API** | SQLi, XSS, CSRF, SSRF, SSTI, Deserialization, JWT, OAuth, GraphQL, Race Conditions, File Upload, Command Injection |
+| :iphone: **Mobile** | Android Components, iOS Keychain & ATS, WebView, Deep Links, Certificate Pinning, Backend API |
+| :busts_in_silhouette: **Internal/AD** | Kerberos, ACL Abuse, AD CS, Lateral Movement, Credential Dumping, LOLBin, Trust Hopping |
+| :cloud: **Cloud/Container** | AWS/Azure/GCP IAM, IMDS, K8s RBAC, Container Escape, Serverless, Storage Exposure |
+| :robot: **AI Security** | Prompt Injection, Tool Calling, RAG Poisoning, File & URL Processing, Model Supply Chain |
+| :package: **Supply Chain** | CI/CD Pipelines, OIDC, Dependency Confusion, Runner Takeover, IaC, Registries |
+| :satellite: **Mini-Program** | wx.login Trust Chain, Cloud Functions, WebView, Payment Logic, Platform Identity |
+| :desktop_computer: **Infrastructure** | Redis/MongoDB/ES, VPN, Default Credentials, Thick Clients, Network Appliances |
 
-| :cloud: Cloud/Container | :robot: AI Security | :package: Supply Chain |
-|---|---|---|
-| AWS/Azure/GCP IAM, IMDS, K8s RBAC, Container Escape, Serverless | Prompt Injection, Tool Calling, RAG Poisoning, File/URL Processing | CI/CD Pipelines, OIDC, Dependency Confusion, Runner Takeover, IaC |
-
-| :satellite: Mini-Program | :desktop_computer: Infrastructure | :wrench: Capabilities |
-|---|---|---|
-| wx.login Trust Chain, Cloud Functions, WebView, Payment Logic | Redis/MongoDB/Elasticsearch, VPN, Thick Clients, Default Credentials | Code Audit, Reverse Engineering, PoC Development, Evasion, Identity Analysis |
+| Capability | Coverage |
+|---|---|
+| :microscope: **Code Audit** | Java/PHP/Python/JS/Go/C# Sink Patterns, Source-to-Sink Data-Flow Analysis |
+| :wrench: **Reverse & Protocol** | Native Binary, Java/.NET Decompilation, Frida Runtime Hooking, Custom Protocol Analysis |
+| :test_tube: **PoC Development** | Bounded Exploit Validation, Failure Debugging, Tool Engineering, PoC Templates |
+| :bust_in_silhouette: **Identity & Network** | Credential Type Reference, Tunneling & Pivoting, Network Position Modeling |
+| :shield: **Evasion** | AMSI/AppLocker/LSA Protection Diagnosis, EDR Behavioral Detection Awareness |
 
 ---
 

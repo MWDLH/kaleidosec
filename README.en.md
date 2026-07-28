@@ -98,14 +98,14 @@ Each step was chosen because evidence supported it, not because a checklist said
 **Claude Code** — copy or clone to the user skills directory:
 
 ```bash
-git clone https://github.com/<org>/pentest-field-operator.git \
+git clone https://github.com/MWDLH/pentest-field-operator.git \
   ~/.claude/skills/pentest-field-operator
 ```
 
 **Codex** — copy or clone to the Codex skills directory:
 
 ```bash
-git clone https://github.com/<org>/pentest-field-operator.git \
+git clone https://github.com/MWDLH/pentest-field-operator.git \
   $CODEX_HOME/skills/pentest-field-operator
 ```
 

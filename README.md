@@ -98,14 +98,14 @@ Agent [加载 Skill 后]：
 **Claude Code** — 复制或克隆到用户 skills 目录：
 
 ```bash
-git clone https://github.com/<org>/pentest-field-operator.git \
+git clone https://github.com/MWDLH/pentest-field-operator.git \
   ~/.claude/skills/pentest-field-operator
 ```
 
 **Codex** — 复制或克隆到 Codex skills 目录：
 
 ```bash
-git clone https://github.com/<org>/pentest-field-operator.git \
+git clone https://github.com/MWDLH/pentest-field-operator.git \
   $CODEX_HOME/skills/pentest-field-operator
 ```
 

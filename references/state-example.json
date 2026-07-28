@@ -1,0 +1,50 @@
+{
+  "schema_version": "2.0",
+  "engagement_id": "example-engagement",
+  "objective": "Validate the authorized test objective with bounded impact",
+  "scope": {
+    "status": "confirmed",
+    "assets": [],
+    "exclusions": [],
+    "constraints": []
+  },
+  "authorization_profile": {
+    "autonomous_levels": ["L0", "L1"],
+    "approved_action_classes": [],
+    "excluded_actions": [],
+    "scale_limits": {},
+    "stop_conditions": [],
+    "approvals": []
+  },
+  "context": {
+    "domain": "unclassified",
+    "phase": "initialization",
+    "current_access": [],
+    "network_position": [],
+    "controls": []
+  },
+  "domain_context": {
+    "primary_domain": "unclassified",
+    "supporting_domains": [],
+    "transition_reason": "",
+    "return_target": ""
+  },
+  "module_stack": [],
+  "observations": {
+    "facts": [],
+    "inferences": [],
+    "hypotheses": [],
+    "unknowns": [],
+    "rejected": []
+  },
+  "assets": [],
+  "credential_refs": [],
+  "findings": [],
+  "attack_paths": [],
+  "actions": [],
+  "blockers": [],
+  "persistent_changes": [],
+  "artifacts": [],
+  "next_decision": {},
+  "last_updated": "2026-07-27T00:00:00+08:00"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "渗透测试实战操作员"
+  short_description: "基于现场证据规划、执行、诊断并持续推进完整的授权渗透测试流程"
+  default_prompt: "Use $pentest-field-operator to assess the current engagement state and drive the next evidence-based penetration-testing action."

@@ -1,0 +1,43 @@
+# Local engagement state
+.pentest_session.json
+.pentest_session.json.*
+*.pentest-session.json
+*.checkpoint.json
+*.bak
+
+# Evidence and sensitive working material
+artifacts/
+evidence/
+engagements/
+captures/
+logs/
+tmp/
+temp/
+.env
+.env.*
+*.pcap
+*.pcapng
+*.har
+*.kirbi
+*.ccache
+*.pem
+*.key
+*.pfx
+*.p12
+
+# Internal review notes
+1.txt
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

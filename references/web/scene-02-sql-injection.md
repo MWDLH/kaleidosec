@@ -37,7 +37,9 @@ Don't start with sqlmap. Start with manual confirmation, then use automation str
 | `--` vs `#` vs `;--` comment behavior | MySQL: `#` or `-- `; MSSQL: `--`; PostgreSQL: `--`; Oracle: `--` |
 | String concat: `'a' \|\| 'b'` works | PostgreSQL, Oracle; MySQL needs `CONCAT()`, MSSQL uses `+` |
 
-**Step 4 — Choose exploitation path by database**:
+**Step 4 — Model the query context before exploiting**: Before using the database capability matrix, determine: what part of the query does your input occupy? (WHERE clause, SELECT column, ORDER BY, INSERT value, table name?) What is the expected output? (data rows, error message, boolean difference, time delay?) What privilege does the database user have? (file read, file write, command execution may not be available.) This model determines which exploitation path is viable — the capability matrix below maps DBMS-specific methods to each path, but the path must first be justified by the query context.
+
+**Step 5 — Choose exploitation path by database**:
 
 | DBMS | File Read | File Write | Command Execution | Hash Dump |
 |---|---|---|---|---|
@@ -70,6 +72,17 @@ UNION SELECT → UNION ALL SELECT, UNION/**/SELECT, /*!50000Union*/ Select
 ' or 1=1-- → ' || 1=1--, ' or 2>1--, ' or 'x'='x
 ```
 
+
+### Failure Branches
+
+| Failure Signal | Likely Cause | Next Variable |
+|---|---|---|
+| `'` returns error but UNION SELECT returns no data | The original query returns zero rows (UNION result not displayed); the SELECT column count is wrong; output encoding strips the injected result | Confirm the column count via ORDER BY 1,2,3...; test NULL concatenation to match column types; if original query returns rows but UNION output is suppressed, switch to error-based or boolean-based extraction |
+| Timing-based payload causes delay but cannot distinguish database | Network latency, server load, or caching causes false-positive timing; the delay is real but too small to be reliable | Establish a baseline from the target's normal response-time distribution within the authorized test window. Choose a sleep value that exceeds baseline variance by a clear margin appropriate to the target's latency profile. Verify with a second independent timing test or an alternative blind technique before concluding |
+| sqlmap reports injectable but manual verification fails | sqlmap detected an injection that requires specific conditions (cookies, headers, CSRF token); or a false positive from aggressive settings; or injection exists but output is suppressed for manual payloads | Replicate the exact sqlmap request (copy headers, cookies, and parameters); lower sqlmap level/risk and retest; if the injection only reproduces under high-risk or high-level settings, the triggers are more specific — classify as partial with the exact conditions documented |
+| UNION works but no useful data in the database (empty tables, no user tables accessible) | Current database user has limited privileges; the application database is read-only or isolated; you are in a honeypot or test database | Enumerate privileges: `SELECT grantee, privilege_type FROM information_schema.user_privileges` (MySQL) or equivalent. If limited, the SQL injection is confirmed but the value is low — park the path and test: can file read/write compensate for limited DB access? |
+| WAF blocks all injection attempts despite encoding variations | The WAF signature is well-tuned; or the WAF is in blocking mode rather than detection-only | Test bypasses one category at a time: HTTP parameter pollution (duplicate parameters), encoding variation (double-URL, UTF-16, IBM/Unicode mismatch), chunked transfer obfuscation, verb tampering (GET→POST). If WAF consistently blocks, park the injection path and test: does the same parameter reach a different injection sink (NoSQL, command, LDAP) that the WAF signature doesn't cover? |
+| Error-based confirmed but UNION and blind both blocked → cannot extract data | The application has layered defenses: error messages are suppressed after the first error; UNION output is filtered; timing is inconsistent | Test out-of-band extraction (DNS/HTTP callback from the database). If egress is also blocked, classify as `partial` — injection confirmed, data extraction not currently possible. Park with a reactivation condition and prioritize other attack classes with higher information gain |
 
 ## Scene Exit
 

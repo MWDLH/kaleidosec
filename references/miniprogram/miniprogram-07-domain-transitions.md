@@ -8,6 +8,7 @@
 - **→ code-audit**: For recovered JS bundles that contain business logic or cryptographic operations.
 - **→ reverse-protocol**: For native mini-program runtimes or custom encryption in communications.
 - **→ cloud**: For cloud functions (WeChat Cloud Base, Alipay Cloud Function) that may have broader cloud access.
+- **→ business-logic**: For payment logic, coupon/incentive abuse, workflow bypass, and state-machine attacks — these are common in mini-program commerce flows and follow the same decision framework regardless of platform
 
 
 ## Main Attack Chain

@@ -49,10 +49,6 @@ When you have LFI but need code execution:
 ---
 
 
-## Card Exit
-
-Classify the result, update evidence and attempted methods, record capability or risk changes, identify affected paths, and apply the return contract in [../module-continuity.md](../module-continuity.md).
-
 ## Scene Exit
 
 Return result classification, evidence, changed assumptions, affected paths, persistent changes, and the next parent-path decision.

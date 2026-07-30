@@ -4,6 +4,8 @@
 
 ## Attack Primitives: Business Logic & Race Conditions
 
+For state-machine analysis, workflow bypass, semantic constraint violations, and incentive abuse — the full business-logic decision framework — invoke the cross-cutting capability: [Business-logic router](../business-logic/router.md). This card covers race conditions and GraphQL-specific attacks that do not require workflow modeling.
+
 ### Race Condition Patterns
 
 Modern applications have more race condition surfaces than traditional ones:

@@ -12,6 +12,7 @@ If code, package artifacts, mobile clients, cloud metadata, internal services, o
 - **→ mobile**: When testing reveals a mobile-specific API version or authentication path
 - **→ internal-ad**: When SSRF or file operations reach internal services
 - **→ supply-chain**: When JS dependencies, CI/CD exposure, or build artifacts are discovered
+- **→ business-logic**: When a multi-step business process handles value actions (payment, order, transfer, redemption, approval) and the server may trust client-supplied business data, state, or sequence
 
 Carry forward: the specific endpoint/function/parameter being investigated, the identity context, and the security question to answer.
 

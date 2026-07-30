@@ -77,7 +77,7 @@ Each step was chosen because evidence supported it, not because a checklist said
 
 ## Coverage
 
-**8 attack surfaces. 5 cross-cutting capabilities.** Cards load only when evidence supports them — the agent never traverses directories as a checklist.
+**8 attack surfaces. 6 cross-cutting capabilities.** Cards load only when evidence supports them — the agent never traverses directories as a checklist.
 
 | Domain | Coverage |
 |---|---|
@@ -97,6 +97,7 @@ Each step was chosen because evidence supported it, not because a checklist said
 | **PoC Development** | Bounded exploit validation scripts, failure diagnosis & debugging, PoC templates by vulnerability class |
 | **Identity & Network** | 14 credential-type quick reference, tunneling & pivoting matrix, network position modeling & credential prioritization |
 | **Evasion** | AMSI / AppLocker / LSA Protection diagnosis & bypass, EDR behavioral detection awareness, constrained environment adaptation |
+| **Business Logic** | State machine abuse, workflow bypass, semantic constraint violations, incentive abuse, cross-platform (Web/Mini-program/Mobile) logic flaw analysis |
 
 ---
 
@@ -146,7 +147,7 @@ pentest-field-operator/
 |-- SKILL.md              ← Core operator rules, safety gates, decision contracts
 |-- agents/openai.yaml    ← Codex interface definition
 |-- scripts/              ← State management helper (Python 3.9+)
-|-- references/           ← 13 domain & capability directories, each with a router
+|-- references/           ← 14 domain & capability directories, each with a router
 |-- README.md / README.en.md
 |-- CONTRIBUTING.md / SECURITY.md / LICENSE
 ```

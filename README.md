@@ -77,7 +77,7 @@ Agent [加载 Skill 后]：
 
 ## 覆盖范围
 
-**8 个攻击面、5 个通用能力。** 卡片按证据按需加载，Agent 不会把目录当清单遍历。
+**8 个攻击面、6 个通用能力。** 卡片按证据按需加载，Agent 不会把目录当清单遍历。
 
 | 攻击面 | 覆盖内容 |
 |---|---|
@@ -97,6 +97,7 @@ Agent [加载 Skill 后]：
 | **PoC 开发** | 有边界的漏洞验证脚本、失败诊断与调试、按漏洞类型提供的 PoC 代码模板与工具选择 |
 | **身份与网络** | 14 种凭据类型速查表、隧道与跳板模式矩阵、网络位置建模与凭据优先级评估 |
 | **防御规避** | AMSI / AppLocker / LSA Protection 诊断与绕过、EDR 行为检测理解与受控环境适配 |
+| **业务逻辑** | 状态机滥用、工作流绕过、语义约束违反、激励滥用、跨平台（Web/小程序/移动端）逻辑漏洞分析 |
 
 ---
 
@@ -145,7 +146,7 @@ pentest-field-operator/
 |-- SKILL.md              ← 核心操作规则、安全门控、决策合同
 |-- agents/openai.yaml    ← Codex 接口定义
 |-- scripts/              ← 状态管理脚本 (Python 3.9+)
-|-- references/           ← 13 个领域与能力目录，每个都有路由入口
+|-- references/           ← 14 个领域与能力目录，每个都有路由入口
 |-- README.md / README.en.md
 |-- CONTRIBUTING.md / SECURITY.md / LICENSE
 ```

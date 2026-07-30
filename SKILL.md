@@ -125,6 +125,7 @@ Load capabilities only when the active path needs them:
 - PoC, exploit validation, debugging, and tooling: [PoC/tooling router](references/poc-tooling/router.md)
 - Identity, credentials, trust, and network position: [Identity/network router](references/identity-network/router.md)
 - Authorized control-evasion and constrained-environment adaptation: [Evasion-testing router](references/evasion/router.md)
+- Business-logic, workflow, state-machine, and incentive-abuse analysis: [Business-logic router](references/business-logic/router.md)
 
 Record parent_path, capability_question, expected_deliverable, and return_condition. Return results to the parent path and rerank affected paths.
 

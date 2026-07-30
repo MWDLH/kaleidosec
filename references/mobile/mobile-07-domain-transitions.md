@@ -8,6 +8,7 @@
 - **→ reverse-protocol**: For native library analysis, custom protocol reverse engineering, or cryptographic key extraction from binary.
 - **→ code-audit**: For recovered source code or JS bundles that contain server-side logic hints.
 - **→ cloud**: For mobile backends hosted on cloud platforms (Firebase, AWS Amplify, Azure Mobile Apps).
+- **→ business-logic**: For in-app purchase validation bypass, subscription state manipulation, and incentive/reward abuse — mobile adds device-binding and receipt-validation dimensions to the standard business-logic framework
 
 
 ## Transition Handoff

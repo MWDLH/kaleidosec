@@ -145,9 +145,8 @@ kaleidosec/
 
 Intended only for security testing, red-team exercises and attack-defense assessments for which you hold
 explicit authorization. You must ensure lawful authorization for every target and accept full
-responsibility for your actions. This project grants no testing permission; the tool performs no attacks
-itself — execution is carried out by the agent and tools you choose. Do not retain unredacted client data,
-credentials, evidence or target information in reports or commits.
+responsibility for your actions. Do not retain unredacted client data, credentials, evidence or target
+information in reports or commits.
 
 Output and constraints are not guaranteed to be reliable. The model can misjudge or misoperate; any
 high-impact or sensitive action should be reviewed by a human, who bears the risk. The guard only reduces

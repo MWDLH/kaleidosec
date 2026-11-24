@@ -19,10 +19,9 @@ Read [../module-continuity.md](../module-continuity.md) before invoking a card. 
 
 ## Card Router
 
-| Card | Load condition | Required return |
+| Card | Load when evidence shows (field / response signature) | Must answer after loading |
 |---|---|---|
-| [Diagnose The Control Layer](evasion-testing-01-diagnose-the-control-layer.md) | Load on entry to establish position, prerequisites, and the bounded question. | Return evidence, capability changes, affected paths, and the next decision. |
-| [Evasion Techniques By Control Layer](evasion-testing-02-evasion-techniques-by-control-layer.md) | Load only when current evidence supports the Evasion Techniques By Control Layer route or its prerequisite must be tested. | Return evidence, capability changes, affected paths, and the next decision. |
-| [Evasion Decision Flow](evasion-testing-03-evasion-decision-flow.md) | Load only when current evidence supports the Evasion Decision Flow route or its prerequisite must be tested. | Return evidence, capability changes, affected paths, and the next decision. |
-| [Return](evasion-testing-04-return.md) | Load before returning capability results to the parent attack path. | Return evidence, capability changes, affected paths, and the next decision. |
-
+| [Diagnose The Control Layer](evasion-testing-01-diagnose-the-control-layer.md) | Entry: a defensive control blocked a validation, and no lower-noise alternative exists. | Which control layer blocks us, and what exactly did it observe? |
+| [Evasion Techniques By Control Layer](evasion-testing-02-evasion-techniques-by-control-layer.md) | Control layer identified (AV/EDR/network/proxy/WAF/logging). | Which technique targets this layer, and what is its detection footprint? |
+| [Evasion Decision Flow](evasion-testing-03-evasion-decision-flow.md) | Several evasion options exist and must be ranked. | Which option has the best gain-to-footprint ratio, and what is the rollback? |
+| [Return](evasion-testing-04-return.md) | Before returning results to the parent attack path. | What changed, and which parent paths must be re-ranked? |

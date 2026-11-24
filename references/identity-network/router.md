@@ -13,9 +13,9 @@ Read [../module-continuity.md](../module-continuity.md) before invoking a card. 
 
 ## Card Router
 
-| Card | Load condition | Required return |
+| Card | Load when evidence shows (field / response signature) | Must answer after loading |
 |---|---|---|
-| [Model Identity](identity-network-01-model-identity.md) | Load on entry to establish position, prerequisites, and the bounded question. | Return evidence, capability changes, affected paths, and the next decision. |
-| [Model Network Position](identity-network-02-model-network-position.md) | Load on entry to establish position, prerequisites, and the bounded question. | Return evidence, capability changes, affected paths, and the next decision. |
-| [Credential Assessment — Prioritization](identity-network-03-credential-assessment-prioritization.md) | Load only when current evidence supports the Credential Assessment — Prioritization route or its prerequisite must be tested. | Return evidence, capability changes, affected paths, and the next decision. |
-| [Return To Parent Path](identity-network-04-return-to-parent-path.md) | Load before returning capability results to the parent attack path. | Return evidence, capability changes, affected paths, and the next decision. |
+| [Model Identity](identity-network-01-model-identity.md) | Entry: accounts, tokens or credentials held but their authority is unclear. | What does this identity actually authorize, and where does it fail? |
+| [Model Network Position](identity-network-02-model-network-position.md) | Reachability or proxy/jump position unclear, or egress constraints observed. | What is reachable from here, and what is the cheapest way to prove it? |
+| [Credential Assessment — Prioritization](identity-network-03-credential-assessment-prioritization.md) | Multiple credentials, hashes or tickets available. | Which credential yields the most authority per unit of risk? |
+| [Return To Parent Path](identity-network-04-return-to-parent-path.md) | Before returning results to the parent attack path. | What changed, and which parent paths must be re-ranked? |

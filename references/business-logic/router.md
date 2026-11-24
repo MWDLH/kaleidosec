@@ -12,9 +12,9 @@ Read [../module-continuity.md](../module-continuity.md) before invoking a card. 
 
 ## Card Router
 
-| Card | Load condition | Required return |
+| Card | Load when evidence shows (field / response signature) | Must answer after loading |
 |---|---|---|
-| [Decision Framework](business-logic-01-decision-framework.md) | Load when evidence supports a business-logic path: a value action (payment, order, transfer, redemption, refund, approval) whose integrity relies on client-enforced sequence, client-supplied amounts, or client-respected state transitions. | Return evidence, capability changes, affected paths, and the next decision. |
+| [Decision Framework](business-logic-01-decision-framework.md) | A value action (payment, order, transfer, redemption, refund, approval) whose integrity relies on client-enforced sequence, client-supplied amounts, or client-respected state transitions. | Which invariant is client-enforced, and what sequence or value violates it? |
 
 ## When To Invoke This Capability
 

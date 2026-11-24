@@ -1,4 +1,8 @@
 # Local engagement state
+.kaleidosec
+.kaleidosec.*
+.pfo_active
+.pfo_active.*
 .pentest_session.json
 .pentest_session.json.*
 *.pentest-session.json

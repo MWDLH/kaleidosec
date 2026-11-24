@@ -1,0 +1,22 @@
+{
+  "name": "kaleidosec",
+  "version": "2.0.0",
+  "description": "Evidence-driven penetration-testing operator: deterministic mode injection, tier judgment, attack-path discipline, and bounded safety gates for authorized engagements.",
+  "author": {
+    "name": "MWDLH",
+    "url": "https://github.com/MWDLH"
+  },
+  "homepage": "https://github.com/MWDLH/kaleidosec",
+  "repository": "https://github.com/MWDLH/kaleidosec",
+  "license": "MIT",
+  "keywords": [
+    "penetration-testing",
+    "red-team",
+    "security",
+    "agent",
+    "hooks",
+    "decision-support",
+    "pentest",
+    "authorized-testing"
+  ]
+}

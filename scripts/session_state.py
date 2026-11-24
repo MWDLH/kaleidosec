@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Initialize, validate, summarize, authorize, and checkpoint pentest state."""
 
 from __future__ import annotations
@@ -26,6 +26,14 @@ SECRET_KEYS = {
     "password", "passwd", "secret", "token", "token_value", "api_key",
     "private_key", "raw_hash", "credential",
 }
+OBSERVATION_KEYS = {
+    "fact": "facts",
+    "inference": "inferences",
+    "hypothesis": "hypotheses",
+    "unknown": "unknowns",
+    "rejected": "rejected",
+}
+CONFIDENCE_LEVELS = ("confirmed", "high", "medium", "low")
 
 
 def now_iso() -> str:
@@ -238,8 +246,18 @@ def save_checked(path: Path, data: dict[str, Any], backup: bool = False) -> None
 
 
 def cmd_init(args: argparse.Namespace) -> int:
+    if args.scope_status == "confirmed" and not args.authorization_ref:
+        raise ValueError(
+            "--scope-status confirmed requires --authorization-ref "
+            "(ticket, authorization letter, or email id); scope cannot be self-confirmed"
+        )
     levels = parse_levels(args.autonomous_levels) if args.autonomous_levels else None
-    write_state(args.path, new_state(args.engagement_id, args.objective, args.domain, args.scope_status, levels), args.force)
+    state = new_state(args.engagement_id, args.objective, args.domain, args.scope_status, levels)
+    if args.authorization_ref:
+        state["scope"]["authorization_ref"] = args.authorization_ref
+    if args.scope_root:
+        state["scope_root"] = args.scope_root
+    write_state(args.path, state, args.force)
     print(f"initialized {args.path}")
     return 0
 
@@ -331,6 +349,128 @@ def cmd_checkpoint(args: argparse.Namespace) -> int:
     return 0
 
 
+def find_path(data: dict[str, Any], path_id: str) -> dict[str, Any]:
+    for record in data.get("attack_paths", []):
+        if isinstance(record, dict) and record.get("id") == path_id:
+            return record
+    raise ValueError(f"attack path not found: {path_id}")
+
+
+def cmd_fact(args: argparse.Namespace) -> int:
+    data = load_state(args.path)
+    bucket = OBSERVATION_KEYS[args.observation_class]
+    records = data["observations"].setdefault(bucket, [])
+    record: dict[str, Any] = {
+        "statement": args.statement,
+        "source": args.source,
+        "class": args.observation_class,
+        "confidence": args.confidence,
+        "recorded_at": now_iso(),
+    }
+    if args.asset:
+        record["assets"] = list(args.asset)
+    records.append(record)
+    save_checked(args.path, data, args.backup)
+    print(f"recorded {args.observation_class} #{len(records)}: {args.statement[:70]}")
+    return 0
+
+
+def cmd_path(args: argparse.Namespace) -> int:
+    data = load_state(args.path)
+    paths = data.setdefault("attack_paths", [])
+    record = next((p for p in paths if isinstance(p, dict) and p.get("id") == args.id), None)
+    if record is None:
+        record = {"id": args.id}
+        paths.append(record)
+    record.update({
+        "title": args.title,
+        "status": args.status,
+        "next_action": args.next_action,
+        "updated_at": now_iso(),
+    })
+    if args.parent_path:
+        record["parent_path"] = args.parent_path
+    if args.value:
+        record["value"] = args.value
+    save_checked(args.path, data, args.backup)
+    print(f"path {args.id}: {args.status}")
+    return 0
+
+
+def cmd_park(args: argparse.Namespace) -> int:
+    data = load_state(args.path)
+    record = find_path(data, args.id)
+    record["status"] = "parked"
+    record["reactivation_condition"] = args.reactivation_condition
+    record["updated_at"] = now_iso()
+    save_checked(args.path, data, args.backup)
+    print(f"parked {args.id}: reactivate when {args.reactivation_condition}")
+    return 0
+
+
+def cmd_promote(args: argparse.Namespace) -> int:
+    data = load_state(args.path)
+    record = find_path(data, args.id)
+    record["status"] = args.status
+    record.setdefault("supporting_evidence", []).append({
+        "statement": args.trigger_evidence,
+        "recorded_at": now_iso(),
+    })
+    record.pop("reactivation_condition", None)
+    record["updated_at"] = now_iso()
+    save_checked(args.path, data, args.backup)
+    print(f"promoted {args.id}: {args.status}")
+    return 0
+
+
+def cmd_report(args: argparse.Namespace) -> int:
+    data = load_state(args.path)
+    errors = validate_state(data)
+    if errors:
+        print("state is invalid; run check for details", file=sys.stderr)
+        return 1
+    paths = data.get("attack_paths", [])
+    by_status: dict[str, list[dict[str, Any]]] = {}
+    for record in paths:
+        by_status.setdefault(record.get("status", "unknown"), []).append(record)
+
+    lines = [
+        f"# Engagement report: {data['engagement_id']}",
+        "",
+        f"- objective: {data['objective']}",
+        f"- scope: {data['scope']['status']} ({len(data['scope']['assets'])} assets)",
+        f"- observations: " + ", ".join(
+            f"{bucket}={len(data['observations'].get(bucket, []))}"
+            for bucket in REQUIRED_OBSERVATIONS
+        ),
+        f"- findings: {len(data.get('findings', []))}",
+        f"- persistent changes: {len(data.get('persistent_changes', []))}",
+        f"- blockers: {len(data.get('blockers', []))}",
+        "",
+        "## Attack paths",
+    ]
+    if not paths:
+        lines.append("- none recorded")
+    for status in sorted(by_status):
+        lines.append(f"### {status}")
+        for record in by_status[status]:
+            title = record.get("title") or record.get("id")
+            line = f"- {record.get('id')}: {title}"
+            if record.get("next_action"):
+                line += f" → {record['next_action']}"
+            if record.get("reactivation_condition"):
+                line += f" (reactivate when: {record['reactivation_condition']})"
+            lines.append(line)
+    lines.extend(["", f"_last_updated: {data['last_updated']}_", ""])
+    text = "\n".join(lines)
+    if args.out:
+        args.out.write_text(text, encoding="utf-8")
+        print(f"report written to {args.out}")
+    else:
+        print(text)
+    return 0
+
+
 def add_path_argument(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--path", type=Path, default=Path(".pentest_session.json"))
 
@@ -344,6 +484,14 @@ def build_parser() -> argparse.ArgumentParser:
     init_parser.add_argument("--objective", required=True)
     init_parser.add_argument("--domain", default="unclassified")
     init_parser.add_argument("--scope-status", choices=sorted(SCOPE_STATUSES), default="draft")
+    init_parser.add_argument(
+        "--authorization-ref",
+        help="ticket / authorization letter / email id; required when --scope-status confirmed",
+    )
+    init_parser.add_argument(
+        "--scope-root",
+        help="optional subtree that owns this state; markers outside it are ignored",
+    )
     init_parser.add_argument("--autonomous-levels", help="comma-separated L0,L1,L2 override")
     init_parser.add_argument("--force", action="store_true")
     init_parser.set_defaults(func=cmd_init)
@@ -379,10 +527,69 @@ def build_parser() -> argparse.ArgumentParser:
     add_path_argument(checkpoint_parser)
     checkpoint_parser.add_argument("--backup", action="store_true")
     checkpoint_parser.set_defaults(func=cmd_checkpoint)
+
+    for alias, func, helptext in (
+        ("position", cmd_summary, "alias of summary: show current position"),
+        ("check", cmd_validate, "alias of validate: check the state schema"),
+    ):
+        alias_parser = subparsers.add_parser(alias, help=helptext)
+        add_path_argument(alias_parser)
+        alias_parser.set_defaults(func=func)
+
+    fact_parser = subparsers.add_parser("fact", help="record an observation")
+    add_path_argument(fact_parser)
+    fact_parser.add_argument("--statement", required=True)
+    fact_parser.add_argument("--source", required=True)
+    fact_parser.add_argument(
+        "--class", dest="observation_class", required=True, choices=sorted(OBSERVATION_KEYS),
+    )
+    fact_parser.add_argument("--confidence", choices=CONFIDENCE_LEVELS, default="medium")
+    fact_parser.add_argument("--asset", action="append", default=[])
+    fact_parser.add_argument("--backup", action="store_true")
+    fact_parser.set_defaults(func=cmd_fact)
+
+    path_parser = subparsers.add_parser("path", help="create or update an attack path")
+    add_path_argument(path_parser)
+    path_parser.add_argument("--id", required=True)
+    path_parser.add_argument("--title", required=True)
+    path_parser.add_argument("--status", required=True, choices=sorted(PATH_STATUSES))
+    path_parser.add_argument("--next-action", required=True)
+    path_parser.add_argument("--parent-path")
+    path_parser.add_argument("--value")
+    path_parser.add_argument("--backup", action="store_true")
+    path_parser.set_defaults(func=cmd_path)
+
+    park_parser = subparsers.add_parser("park", help="park a path with a reactivation condition")
+    add_path_argument(park_parser)
+    park_parser.add_argument("--id", required=True)
+    park_parser.add_argument("--reactivation-condition", required=True)
+    park_parser.add_argument("--backup", action="store_true")
+    park_parser.set_defaults(func=cmd_park)
+
+    promote_parser = subparsers.add_parser("promote", help="reactivate or deepen a parked path")
+    add_path_argument(promote_parser)
+    promote_parser.add_argument("--id", required=True)
+    promote_parser.add_argument("--trigger-evidence", required=True)
+    promote_parser.add_argument("--status", choices=["active", "deep_dive"], default="active")
+    promote_parser.add_argument("--backup", action="store_true")
+    promote_parser.set_defaults(func=cmd_promote)
+
+    report_parser = subparsers.add_parser("report", help="render a report summary from state")
+    add_path_argument(report_parser)
+    report_parser.add_argument("--out", type=Path)
+    report_parser.set_defaults(func=cmd_report)
     return parser
 
 
 def main() -> int:
+    for stream, kwargs in (
+        (sys.stdout, {"encoding": "utf-8"}),
+        (sys.stderr, {"encoding": "utf-8", "errors": "replace"}),
+    ):
+        try:
+            stream.reconfigure(**kwargs)
+        except Exception:
+            pass
     args = build_parser().parse_args()
     try:
         return args.func(args)

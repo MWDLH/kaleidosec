@@ -1,172 +1,250 @@
-# Pentest Field Operator
+# Kaleidosec
 
 [简体中文](README.md) | English
 
-**An evidence-driven penetration testing Skill for AI agents — think like a senior operator, not a script kiddie.**
+> **Every angle, a different path.**
+> *As the view shifts, the security landscape unfolds.*
 
-<br>
+Kaleidosec is a **penetration-testing decision mode** for AI agents. It ships no scanner, orchestrates no
+tools, and generates no payloads. What it injects is a decision protocol: how to assess a target, how to
+rank paths, how to ground each step in evidence, and when to stop.
 
-AI agents don't lack vulnerability knowledge. Ask one about SQL injection types, Kerberos authentication flows, or AWS privilege escalation paths — it'll answer better than most engineers.
+The name comes from the kaleidoscope: change the identity, the entry point, or the angle, and the same
+target shows a different attack surface. A seasoned tester does not stare at one angle; they rotate
+between views and pick the path worth taking.
 
-What they lack is the ability to make the right call, repeatedly, in a real, dynamic, information-incomplete engagement.
-
-Pentest Field Operator exists to close that gap. It doesn't teach an agent how to use sqlmap — it teaches it how to *think*:
-
-- What evidence do I have? What critical information is still missing?
-- Which path has the highest value right now?
-- When something fails, which variable do I change — instead of which tool I switch to?
-- After gaining new access, how do I continue the original attack chain?
-
-In short: it gives an AI agent an operating system for real penetration testing.
+Kaleidosec ships as a Claude Code plugin: one always-on decision protocol plus two lifecycle hooks.
+Once installed, it enters the mode in an engagement directory or on a clear signal, and stays out of the
+way otherwise. It can also be used as a plain skill.
 
 ---
 
-## What it solves
+## Why it exists
 
-| Common Agent Failure | How Pentest Field Operator Fixes It |
+AI agents do not lack vulnerability knowledge. They can explain SQL injection classes, Kerberos
+authentication, and IAM escalation paths better than most people. What they lack is the ability to keep
+making sound trade-offs in a real, dynamic, incomplete environment:
+
+- Which path does the evidence actually support?
+- Which one has the best value-to-cost ratio?
+- On failure, which variable should change — not which tool?
+- After gaining a new privilege, how does the original chain continue?
+
+These judgments are hard to encode as a fixed workflow, because they depend on the shape of the target,
+the evidence already collected, and the remaining budget. Kaleidosec turns them into an operating
+protocol an agent can carry.
+
+## Field problems and mechanisms
+
+| Common problem | Kaleidosec mechanism |
 |---|---|
-| :repeat: **Tool cycling** — swaps tools on failure without diagnosing the cause | 8-layer failure classification (execution / environment / access / reachability / method / prerequisite / hypothesis / route value) — changes one variable at a time |
-| :newspaper: **Alert = finding** — reports every scanner output as confirmed | Evidence grading (fact / inference / hypothesis / unknown / rejected) — a fingerprint or CVE match is not a confirmed vulnerability |
-| :dizzy_face: **Cross-domain amnesia** — restarts discovery after every pivot | Module stack + parent-path return protocol — carries identity, network position, evidence, and objective across domains |
-| :dart: **Tunnel vision** — drills one path indefinitely | Four-state path management (active / deep_dive / parked / closed) — parks low-value paths with a reactivation condition |
-| :shrug: **Decision black box** — can't explain why this step was chosen | Every action outputs: current judgment, key evidence, critical unknowns, why this step ranks first, and what to change on failure |
+| Swapping tools on failure without diagnosing | 8-way failure classification (execution / environment / access / reachability / method / prerequisite / hypothesis / route value); change one variable per attempt |
+| Treating scanner output as a finding | Evidence classes (fact / inference / hypothesis / unknown / rejected); a fingerprint or CVE match is not a vulnerability |
+| Restarting reconnaissance after a domain change | Module call stack + parent-path return contract; identity, network position, evidence and objective travel with the agent |
+| Drilling one path forever | Four path states (active / deep-dive / parked / closed); parking requires a reactivation condition |
+| Unexplainable decisions | Each step states: current judgment / key evidence / unknowns / why now / what to change on failure |
 
----
+## Relationship to automated pentest tooling
 
-## How it works — in 30 seconds
+Automated tools excel at **coverage**: sweeping known surfaces quickly and offloading repetitive work.
+What actually consumes time in the field is **trade-off**: where to start, how deep to go, when to stop.
 
-The Skill turns penetration testing into a **decision loop** that never loses state:
+Kaleidosec works on the latter. It is designed to run alongside existing scanners, exploitation
+frameworks and proxies: the tools execute, while Kaleidosec decides what to execute, in what order, and
+when to stop.
 
-```
-Where am I? → What do I know? → What's the best path?
-→ Execute one bounded action → What happened?
-→ What changed? → Back to step one
-```
+## How it works
 
-It does this through four mechanisms that no other pentest Skill provides:
+Kaleidosec models an authorized engagement as a continuously updated decision loop:
 
-:compass: **Evidence-driven decisions** — Every action is justified by confirmed facts, not tool availability. "I'm doing X because we observed Y, and the unknown Z could change the route."
-
-:fork_and_knife: **Attack path management** — Paths are tracked, ranked, deepened, parked, or closed. No tunnel vision. No checklist-driven shallowness.
-
-:link: **Cross-domain continuity** — When you pivot from a web app to internal AD to cloud IAM, the agent carries identity, network position, evidence, and the parent objective. It doesn't start over.
-
-:shield: **Practical safety model** — Actions are classified by actual impact (L0–L3), not tool names. Routine work flows without interruption; persistence, trust changes, and control-plane mutation require explicit approval.
-
----
-
-## A real example
-
-```
-Operator: "I have a low-privilege domain user. Can we reach DA?"
-
-Agent [Skill loaded]:
-  1. Establish position: whoami, groups, network interfaces, domain controller
-  2. Collect: enumerate SPNs → find a service account with MSSQLSvc SPN
-  3. Decision: Kerberoast the service account (low noise, high info gain)
-  4. Execute: GetUserSPNs → crack offline → cleartext password
-  5. Validate: crackmapexec → local admin on SQL-01
-  6. Pivot: WMIExec to SQL-01 → discover linked server to DC
-  7. Impact: xp_cmdshell on DC via linked server → Domain Admin confirmed
-  8. Cleanup: remove test account, document chain, save session state
+```text
+locate current position → consolidate evidence → rank candidate paths
+→ run one bounded action → interpret the result → update state → re-rank
 ```
 
-Each step was chosen because evidence supported it, not because a checklist said so. Each failure would have been diagnosed at the correct layer — credential quality, network reachability, EDR interference — rather than cycling tools.
+Three properties of the loop:
 
----
+**Depth is judged, not classified.** Instead of mapping a target onto fixed categories, it weighs five
+dimensions: exposed surface, identity and privilege boundaries, decision-changing unknowns, objective
+value, and available budget. It starts at the lightest depth, escalates when evidence moves, and closes
+when gains stop.
+
+**Evidence discipline.** Fact, inference, hypothesis, unknown and rejected are recorded separately. Every
+action is bound to confirmed facts; nothing is done merely because a tool is available.
+
+**Active stopping.** Every path carries a cost/benefit trade-off. When gain no longer justifies cost, the
+path is parked with an explicit reactivation condition instead of mechanically completing a tool list.
+
+## Design principles
+
+Decision-making is split into three layers:
+
+| Layer | Content | Decided by |
+|---|---|---|
+| **L0 hard boundaries** | Human approval for high-impact actions, whether to inject, mandatory baseline, add-locks-only | Rules, non-negotiable |
+| **L1 judgment** | Target complexity, route selection, depth escalation, stopping, how deep to go | Model, dynamic |
+| **L2 traceability** | Per-step judgment, next action, what to change on failure; depth recorded in state | Mandatory record |
+
+In one line: rules decide "may we, do we enter, must we do it"; the model decides "where, how deep, when to stop".
 
 ## Coverage
 
-**8 attack surfaces. 6 cross-cutting capabilities.** Cards load only when evidence supports them — the agent never traverses directories as a checklist.
+**8 attack surfaces, 6 cross-cutting capabilities.** Cards load on evidence, never as a checklist.
 
-| Domain | Coverage |
+| Surface | Coverage |
 |---|---|
-| **Web/API** | SQLi, XSS, CSRF, SSRF, SSTI, Deserialization, JWT, OAuth, GraphQL, Race Conditions, File Upload, Command Injection |
-| **Mobile** | Android Components, iOS Keychain & ATS, WebView Attacks, Deep Links, Certificate Pinning, Backend API Testing |
-| **Internal/AD** | Kerberos Attacks, ACL Abuse, AD CS, Lateral Movement, Credential Dumping, LOLBin, Trust Hopping |
-| **Cloud/Container** | AWS / Azure / GCP IAM Escalation, IMDS, K8s RBAC, Container Escape, Serverless, Storage Exposure |
-| **AI Security** | Prompt Injection, Tool Calling Abuse, RAG Poisoning, File & URL Processing, Model Supply Chain |
-| **Supply Chain** | CI/CD Pipeline Attacks, OIDC Abuse, Dependency Confusion, Runner Takeover, IaC Analysis, Registries |
-| **Mini-Program** | wx.login Trust Chain, Cloud Function Authorization, WebView Attacks, Payment Logic, Platform Identity |
-| **Infrastructure** | Redis / MongoDB / ES Unauthenticated Access, VPN, Default Credentials, Thick Clients, Network Appliances |
+| **Web/API** | SQLi, XSS, CSRF, SSRF, SSTI, deserialization, JWT, OAuth, GraphQL, race conditions, file upload, command injection |
+| **Mobile** | Android components, iOS Keychain/ATS, WebView, deep links, certificate pinning bypass, backend APIs |
+| **Internal/AD** | Kerberos attacks, ACL abuse, AD CS, lateral movement, credential extraction, LOLBins, domain trust hopping |
+| **Cloud/Containers** | AWS/Azure/GCP IAM escalation, metadata service, K8s RBAC, container escape, serverless, storage exposure |
+| **AI security** | Prompt injection, tool-calling abuse, RAG poisoning, file/URL handling, model supply chain |
+| **Supply chain** | CI/CD pipeline attacks, OIDC abuse, dependency confusion, runner hijacking, IaC analysis, artifact registries |
+| **Mini-programs** | wx.login trust chain, cloud-function authorization, WebView, payment logic, platform identity |
+| **Infrastructure** | Redis/MongoDB/ES exposure, VPN, default credentials, thick clients, network appliances |
 
 | Capability | Coverage |
 |---|---|
-| **Code Audit** | Sink patterns for Java / PHP / Python / JS / Go / C#, source-to-sink data-flow tracing, codebase audit workflow |
-| **Reverse & Protocol** | Native binary analysis, Java / .NET decompilation, Frida runtime hooking, custom protocol format & state machine analysis |
-| **PoC Development** | Bounded exploit validation scripts, failure diagnosis & debugging, PoC templates by vulnerability class |
-| **Identity & Network** | 14 credential-type quick reference, tunneling & pivoting matrix, network position modeling & credential prioritization |
-| **Evasion** | AMSI / AppLocker / LSA Protection diagnosis & bypass, EDR behavioral detection awareness, constrained environment adaptation |
-| **Business Logic** | State machine abuse, workflow bypass, semantic constraint violations, incentive abuse, cross-platform (Web/Mini-program/Mobile) logic flaw analysis |
-
----
+| **Code audit** | Sink catalogs for Java/PHP/Python/JS/Go/C#, source-to-sink tracing, codebase audit workflow |
+| **Reverse engineering** | Native binaries, Java/.NET decompilation, Frida hooks, custom protocols and state machines |
+| **PoC development** | Bounded validation scripts, failure diagnosis, per-class templates and tool selection |
+| **Identity & network** | Credential types, tunneling and pivoting patterns, network-position modeling, credential prioritization |
+| **Defense evasion** | AMSI/AppLocker/LSA Protection diagnosis, EDR behavior understanding, controlled adaptation |
+| **Business logic** | State-machine abuse, workflow bypass, semantic violations, incentive abuse, cross-platform analysis |
 
 ## Installation
 
-**Claude Code** — copy or clone to the user skills directory:
+### Prerequisite (hook mode only)
 
-```bash
-git clone https://github.com/MWDLH/pentest-field-operator.git \
-  ~/.claude/skills/pentest-field-operator
+The plugin calls a local Python script from two hooks. It needs **Python 3.8+** available as `python`
+(on Windows, tick "Add python.exe to PATH" during installation).
+
+macOS 12.3+ and most Linux distributions ship only `python3`; the hook then fails with
+`python: command not found`. Three options: create a shim
+`sudo ln -sf "$(command -v python3)" /usr/local/bin/python`; use the manual hook and replace `python`
+with `python3`; or use it as a plain skill (no Python required).
+
+### Claude Code (recommended: plugin, enters the mode automatically)
+
+```
+/plugin marketplace add MWDLH/kaleidosec
+/plugin install kaleidosec --marketplace MWDLH/kaleidosec
 ```
 
-**Codex** — copy or clone to the Codex skills directory:
+On Claude Code older than 2.1.275, use two steps:
 
-```bash
-git clone https://github.com/MWDLH/pentest-field-operator.git \
-  $CODEX_HOME/skills/pentest-field-operator
+```
+/plugin marketplace add MWDLH/kaleidosec
+/plugin install kaleidosec@kaleidosec
 ```
 
-Or copy manually to `~/.codex/skills/pentest-field-operator`.
+Takes effect in a **new session**. In a directory with a sentinel, or when a prompt hits a strong signal,
+the mode is entered; unrelated work injects nothing and only sees one short entry hint at session start.
 
-Restart your client after installation. Keep the directory intact — internal routing depends on relative paths.
+To skip the plugin, wire the hooks manually via [`examples/claude-hook/`](examples/claude-hook/).
+
+### Plain skill (no automatic injection)
+
+```bash
+git clone https://github.com/MWDLH/kaleidosec.git \
+  ~/.claude/skills/kaleidosec
+```
+
+**Codex** — copy or clone into the Codex skills directory (project `.agents/skills/`, user `~/.agents/skills/`):
+
+```bash
+git clone https://github.com/MWDLH/kaleidosec.git \
+  .agents/skills/kaleidosec
+```
+
+Restart the client after installation. Keep the directory intact; internal routing depends on relative paths.
+
+## Entering the mode
+
+Place the sentinel `.kaleidosec` in the engagement directory (the legacy `.pfo_active` is still recognized):
+
+```json
+{"engagement_id":"acme-01","objective":"decide whether the low-privilege account reaches the DC","tier":"quick"}
+```
+
+An optional fourth field `scope_root` limits inheritance to that subtree:
+
+```json
+{"engagement_id":"acme-01","objective":"…","tier":"standard","scope_root":"."}
+```
 
 ## Usage
 
 ```
-Use $pentest-field-operator.
+Use $kaleidosec.
 
-Objective: determine whether this low-privilege domain account can reach
-a material security outcome.
-Scope: lab.example.internal and the 12 hosts listed below.
-Authorization: L0-L2 are pre-authorized; no persistence.
-Current access: VPN, one domain user account.
-Evidence: [attach host info, service scan, identity enumeration]
+Objective: decide whether this low-privilege domain account can reach a materially harmful outcome.
+Scope: lab.example.internal and 12 hosts below it.
+Authorization: L0-L2 pre-approved; persistence prohibited.
+Current access: VPN, one standard domain user.
+Evidence: [host details, service scan, identity enumeration]
 
-Continue from the strongest evidence-supported path.
+Continue on the path with the strongest evidence and the highest value.
 ```
 
-To resume an interrupted engagement, provide the matching `.pentest_session.json`.
+Resume: supply the matching `.pentest_session.json` and the agent resumes from the parent path instead of
+starting over.
 
----
+## Host support
+
+| Host | Loading | Determinism |
+|---|---|---|
+| Claude Code (plugin) | `hooks/` auto-injection + skill | **High**: sentinel or strong keyword enters the mode |
+| Claude Code (manual hook) | `examples/claude-hook/settings.json` | **High**: same as above |
+| Claude Code (plain skill) | copy into `~/.claude/skills/` | Low: description-driven invocation |
+| Codex | `.agents/skills/` | Low: description-driven invocation |
+| dsh | not yet adapted | — |
+
+"Determinism" means the mode does not depend on the model remembering to use it; low-determinism hosts
+still need an explicit call.
 
 ## Repository
 
 ```text
-pentest-field-operator/
-|-- SKILL.md              ← Core operator rules, safety gates, decision contracts
-|-- agents/openai.yaml    ← Codex interface definition
-|-- scripts/              ← State management helper (Python 3.9+)
-|-- references/           ← 14 domain & capability directories, each with a router
+kaleidosec/
+|-- SKILL.md                    ← single always-on protocol (the injection source)
+|-- .claude-plugin/             ← plugin manifest + marketplace
+|-- hooks/                      ← hooks.json + kaleido_gate.py (deterministic injection)
+|-- skills/kaleidosec/          ← thin plugin skill entry (points to root protocol)
+|-- modes/                      ← STANDARD / DEEP on-demand cards
+|-- references/                 ← 14 domain & capability directories, each with a router
+|-- scripts/                    ← state helper + budget/sync checks
+|-- examples/claude-hook/       ← manual hook fallback when not using the plugin
+|-- agents/openai.yaml          ← Codex interface definition
 |-- README.md / README.en.md
-|-- CONTRIBUTING.md / SECURITY.md / LICENSE
+|-- CHANGELOG.md / CONTRIBUTING.md / SECURITY.md / LICENSE
 ```
 
----
+## Upgrading from v1
 
-## Design boundaries
+Kaleidosec 2.0 is a structural upgrade from the 1.1 `pentest-field-operator` skill:
 
-- :white_check_mark: Authorized security testing only
-- :white_check_mark: Does not assume tools are installed — checks availability first
-- :white_check_mark: Does not store live passwords, tokens, or private keys
-- :white_check_mark: Does not claim untested surfaces were tested
-- :white_check_mark: Does not replace professional judgment or legal authorization
+- Name unified as `kaleidosec`; installation is now a plugin (two commands)
+- Always-on protocol reduced from ~3.5k tokens to ~1.4k
+- Static tiering replaced by a judgment framework; deterministic injection and state verbs added
+- Legacy `.pfo_active`, `PFO_FORCE`, and `CLAUDE.md` blocks are still recognized
 
----
+See [CHANGELOG.md](CHANGELOG.md).
+
+## Authorization and disclaimer
+
+Kaleidosec is intended **only** for security testing, red-team exercises and attack-defense assessments
+for which you hold explicit authorization.
+
+- You must ensure you have lawful authorization for every target and stay within its scope.
+- This project grants no testing permission and accepts no responsibility for your actions or their consequences.
+- Do not use it against systems, networks, accounts or data you are not authorized to test.
+- The tool itself performs no attacks; execution is carried out by the agent and external tools you choose, at your own responsibility.
+- Do not retain unredacted client data, credentials, evidence or target information in reports or commits.
+- Untested surfaces must not be reported as complete; output does not replace professional judgment or legal authorization.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Never submit real target data, credentials, or client evidence.
+See [CONTRIBUTING.md](CONTRIBUTING.md). Never commit real target data, credentials or client evidence.
 
 ## License
 

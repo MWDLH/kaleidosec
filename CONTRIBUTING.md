@@ -41,7 +41,14 @@ python scripts/session_state.py validate --path references/state-example.json
 python -m py_compile scripts/session_state.py
 ~~~
 
-For frontmatter or packaging changes, use the validator shipped with Codex skill-creator when available. Review relative references after moving files. Exercise major behavior changes only on sanitized synthetic scenarios.
+For frontmatter or packaging changes, run `claude plugin validate .` (add `--strict` to treat
+warnings as errors), `python scripts/check_sync.py` to confirm the plugin entry still matches the
+root protocol, and `python scripts/check_budget.py` to confirm the always-on protocol stays within
+its token budget. The budget check is exact only with `tiktoken` installed (`pip install tiktoken`);
+without it the script prints a word-based estimate and stays green unless the text is clearly over,
+so install `tiktoken` before trusting a pass. For Codex metadata, use the validator shipped with
+Codex skill-creator when available. Review relative references after moving files. Exercise major
+behavior changes only on sanitized synthetic scenarios.
 
 ## Pull requests
 

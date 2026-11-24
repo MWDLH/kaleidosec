@@ -1,0 +1,16 @@
+{
+  "name": "kaleidosec",
+  "description": "Evidence-driven penetration-testing operator: deterministic mode injection, tier judgment, attack-path discipline, and bounded safety gates for authorized engagements.",
+  "owner": {
+    "name": "MWDLH"
+  },
+  "plugins": [
+    {
+      "name": "kaleidosec",
+      "source": "./",
+      "description": "Evidence-driven pentest operator with deterministic mode injection.",
+      "category": "security",
+      "version": "2.0.0"
+    }
+  ]
+}

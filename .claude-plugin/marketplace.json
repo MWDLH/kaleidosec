@@ -10,7 +10,7 @@
       "source": "./",
       "description": "Evidence-driven pentest operator with deterministic mode injection.",
       "category": "security",
-      "version": "2.0.0"
+      "version": "2.0.1"
     }
   ]
 }

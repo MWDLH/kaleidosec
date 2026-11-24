@@ -2,6 +2,16 @@
 
 All notable changes to Kaleidosec are documented here.
 
+## 2.0.1 — 2026-11-24
+
+### Added
+
+- **PreToolUse guard**: inside an engagement workspace, a short list of obviously destructive Bash
+  commands (recursive delete, persistence, credential dumping, bulk credential attempts) now triggers a
+  human confirmation prompt. It is a backstop, not a sandbox; disable with `KALEIDO_NO_GUARD=1`.
+- README: dedicated "highest safety red line" section emphasizing human confirmation for high-impact
+  actions, plus an honest note that model output and constraints are not guaranteed reliable.
+
 ## 2.0.0 — 2026-11-23
 
 First release under the Kaleidosec name. This is a structural upgrade from the 1.1

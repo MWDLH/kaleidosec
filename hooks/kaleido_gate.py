@@ -315,6 +315,52 @@ def state_summary(marker: Path) -> tuple[str, bool]:
     return "\n".join(lines), True
 
 
+# Minimal, high-confidence guard for the highest-impact actions. This is a last-resort
+# net, not a sandbox: it only recognizes obvious destructive commands and asks the human
+# to confirm. Anything else relies on the protocol in SKILL.md.
+GUARD_PATTERNS = (
+    (re.compile(r"\brm\s+-[A-Za-z]*r[A-Za-z]*f|\brm\s+-[A-Za-z]*f[A-Za-z]*r", re.I), "recursive force delete"),
+    (re.compile(r"\bdel\s+/[sf]|\brd\s+/s|\brmdir\s+/s", re.I), "recursive delete"),
+    (re.compile(r"\b(format\s+[a-z]:|\bmkfs\b|\bshred\b|dd\s+if=.*of=/dev/)", re.I), "destructive disk operation"),
+    (re.compile(r"\bschtasks\s+/create\b|\bsc(\.exe)?\s+create\b|\breg(\.exe)?\s+add\b[^\n]*\\Run\b|"
+                r"\bsystemctl\s+enable\b|\bcrontab\s+-e\b|\blaunchctl\s+load\b", re.I), "persistence"),
+    (re.compile(r"\bmimikatz\b|\bsecretsdump\b|procdump[^\n]*lsass|comsvcs\.dll[^\n]*MiniDump|"
+                r"\breg(\.exe)?\s+save\b[^\n]*\bSAM\b", re.I), "credential dumping"),
+    (re.compile(r"\bhydra\b|\bmedusa\b|\bpatator\b", re.I), "bulk credential attempts"),
+)
+
+GUARD_BYPASS_ENV = "KALEIDO_NO_GUARD"
+
+
+def handle_pre_tool(payload: dict, cwd: Path | None) -> int:
+    """Ask for human confirmation on obvious high-impact shell commands inside an engagement."""
+    if os.environ.get(GUARD_BYPASS_ENV, "").strip() in {"1", "true", "yes"}:
+        return 0
+    if cwd is None or find_marker(cwd) is None:
+        return 0  # not an engagement workspace; stay out of the way
+    if payload.get("tool_name") != "Bash":
+        return 0
+    tool_input = payload.get("tool_input") or {}
+    command = str(tool_input.get("command") or "")
+    if not command:
+        return 0
+    for pattern, label in GUARD_PATTERNS:
+        if pattern.search(command):
+            result = {
+                "hookSpecificOutput": {
+                    "hookEventName": "PreToolUse",
+                    "permissionDecision": "ask",
+                    "permissionDecisionReason": (
+                        f"Kaleidosec guard: recognized {label}. Confirm this action is "
+                        "authorized and intended before it runs."
+                    ),
+                }
+            }
+            sys.stdout.write(json.dumps(result) + "\n")
+            return 0
+    return 0
+
+
 def main() -> int:
     force_utf8_stdio()
     event = sys.argv[1] if len(sys.argv) > 1 else "user-prompt"
@@ -322,6 +368,9 @@ def main() -> int:
 
     cwd_raw = payload.get("cwd") or os.environ.get("PFO_CWD") or os.getcwd()
     cwd = Path(cwd_raw) if cwd_raw else None
+
+    if event == "pre-tool":
+        return handle_pre_tool(payload, cwd)
 
     source = find_source()
     if source is None:

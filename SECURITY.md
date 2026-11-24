@@ -15,12 +15,18 @@ Use sanitized synthetic examples.
 
 ## Local execution surface
 
-When installed as a Claude Code plugin, this project registers two hooks that run a local Python
-script (`hooks/kaleido_gate.py`): `SessionStart` and `UserPromptSubmit`. The script requires Python 3.8+
-available as `python`; if that interpreter is missing the hook command fails and no protocol is
-injected.
+When installed as a Claude Code plugin, this project registers three hooks that run a local Python
+script (`hooks/kaleido_gate.py`): `SessionStart`, `UserPromptSubmit`, and `PreToolUse`. The script
+requires Python 3.8+ available as `python`; if that interpreter is missing the hook command fails and no
+protocol is injected.
 
 What it reads, all read-only:
+
+- `PreToolUse`: the proposed Bash command, only to match a short list of obviously destructive patterns
+  (recursive delete, persistence, credential dumping, bulk credential attempts). When one matches, it
+  returns a confirmation request to the host — it never blocks silently and never executes anything.
+  It is active only in a workspace that contains a sentinel and can be disabled with
+  `KALEIDO_NO_GUARD=1`.
 
 - JSON on stdin: the working directory and, for `UserPromptSubmit`, the prompt text.
 - `SKILL.md` — the protocol it injects.

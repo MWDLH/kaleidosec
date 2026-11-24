@@ -22,7 +22,11 @@ to double-inject when it finds a managed `CLAUDE.md` block, but two hooks would 
 |---|---|
 | Engagement directory contains `.kaleidosec` or `.pentest_session.json` | Protocol injected, plus a state summary |
 | Prompt hits a strong keyword (渗透 / red team / nmap / 域控 …) | Protocol injected |
+| Obvious destructive Bash command inside an engagement | A confirmation prompt (recursive delete, persistence, credential dumping, bulk credential attempts) |
 | Anything else | Nothing injected per prompt; one entry hint at session start |
+
+The `PreToolUse` guard is a backstop only. It matches a short list of obviously destructive commands and
+asks for confirmation; it never blocks silently. Disable it with `KALEIDO_NO_GUARD=1`.
 
 The gate reads the protocol from `SKILL.md` at the repository root, so updating the repository updates
 the injected protocol. No second copy exists.

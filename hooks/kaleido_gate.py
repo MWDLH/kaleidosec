@@ -30,12 +30,36 @@ MARKER_NAMES = (".pentest_session.json", ".kaleidosec", ".pfo_active")
 MAX_PARENT_WALK = 4
 MAX_SOURCE_WALK = 6
 
+# SessionStart has no prompt; these signals let an engagement-looking workspace enter
+# the mode without the user creating any file.
+ENGAGEMENT_DIR_HINTS = (
+    "pentest", "engagement", "redteam", "red-team", "adversary", "渗透", "红队", "攻防",
+)
+ENGAGEMENT_FILE_HINTS = (".kaleidosec", ".pentest_session.json", ".pfo_active")
+ENGAGEMENT_FILE_PATTERNS = ("*.har", "*.burp", "*.nmap", "nuclei*.txt", "httpx*.txt", "subdomains*.txt")
+
+
+def looks_like_engagement(cwd: Path | None) -> bool:
+    if cwd is None:
+        return False
+    path = cwd.resolve()
+    lowered = str(path).lower()
+    if any(hint in lowered for hint in ENGAGEMENT_DIR_HINTS):
+        return True
+    if any((path / name).exists() for name in ENGAGEMENT_FILE_HINTS):
+        return True
+    for pattern in ENGAGEMENT_FILE_PATTERNS:
+        if next(path.glob(pattern), None) is not None:
+            return True
+    return False
+
 # Strong: domain-exclusive, low false-positive. A hit alone is enough to inject.
 STRONG_KEYWORDS = (
-    "pentest", "penetration test", "red team", "redteam",
+    "pentest", "penetration test", "red team", "redteam", "offensive security",
     "kerberoast", "lateral movement", "privilege escalation", "privesc",
     "webshell", "reverse shell", "burp", "nmap", "bloodhound", "hashcat",
-    "渗透", "打点", "提权", "横向", "内网", "域控", "授权测试", "红队", "攻防", "反弹",
+    "渗透", "渗透测试", "打点", "提权", "横向", "内网", "域控", "授权测试", "红队",
+    "红蓝对抗", "攻防", "攻防演练", "挖洞", "漏洞挖掘", "反弹",
 )
 
 # Weak: frequent in coding/repair/writing tasks. Only counts next to an object word.
@@ -57,9 +81,9 @@ OBJECT_WORDS = (
 # protocol -> nobody writes the marker).
 INVITE = (
     "<!-- Kaleidosec: no engagement marker here; operator mode is off. -->\n"
-    "To enter: add `.kaleidosec` with "
-    "{\"engagement_id\":\"...\",\"objective\":\"...\",\"tier\":\"quick\"}, "
-    "then restart or /clear. Ignore if unrelated or if ~/.claude/CLAUDE.md has PFO."
+    "Say what you are doing (e.g. 渗透 / red team / 攻防 / 挖洞) and the mode enters "
+    "automatically. Optionally add `.kaleidosec` to keep this workspace in operator mode "
+    "across sessions and resume. Ignore if unrelated, or if ~/.claude/CLAUDE.md has a Kaleidosec block."
 )
 
 # Emitted only when a sentinel exists but a pentest-shaped prompt arrives; the hook has
@@ -410,14 +434,19 @@ def main() -> int:
                 sys.stdout.write(summary + "\n")
         return 0
 
+    auto_entered = False
     if not marker and not forced:
         if event == "session-start":
-            # No marker yet: give a short, ignorable entry hint so a new engagement is not
-            # a silent dead end. A notice about an existing block travels with it.
-            text = INVITE if not md_notice else INVITE + "\n" + md_notice
-            sys.stdout.write(text + "\n")
-            return 0
-        if not prompt_hits(prompt):
+            if looks_like_engagement(cwd):
+                # The workspace looks like an engagement; enter without asking for a file.
+                auto_entered = True
+            else:
+                # No marker yet: give a short, ignorable entry hint so a new engagement is
+                # not a silent dead end. A notice about an existing block travels with it.
+                text = INVITE if not md_notice else INVITE + "\n" + md_notice
+                sys.stdout.write(text + "\n")
+                return 0
+        elif not prompt_hits(prompt):
             return 0  # cheap path: inject nothing
 
     out = [
@@ -427,6 +456,11 @@ def main() -> int:
     ]
     if md_notice:
         out.append(md_notice)
+    if auto_entered:
+        out.append(
+            "<!-- Kaleidosec: engagement-like workspace detected; operator mode entered. "
+            "Add `.kaleidosec` to make this stable across sessions. -->"
+        )
     out.append(body)
 
     if marker is not None:

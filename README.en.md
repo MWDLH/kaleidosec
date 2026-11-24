@@ -114,7 +114,13 @@ Requires Python 3.8+ available as `python` (on macOS/Linux with only `python3`, 
 /plugin install kaleidosec --marketplace MWDLH/kaleidosec
 ```
 
-Takes effect in a **new session**. To skip the plugin, wire the hooks manually via
+Takes effect in a **new session**. Just say what you are doing (e.g. "pentest this site",
+"check the domain controller", "run nmap") and the mode enters automatically; opening a
+workspace that looks like an engagement (name containing pentest / engagement / red-team, or
+containing `.har` / `.burp` / nmap output) also enters it. Add `.kaleidosec` only if you want a
+fixed workspace and cross-session resume.
+
+To skip the plugin, wire the hooks manually via
 [`examples/claude-hook/`](examples/claude-hook/), or use it as a plain skill:
 
 ```bash

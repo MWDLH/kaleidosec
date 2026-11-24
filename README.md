@@ -101,8 +101,11 @@ Kaleidosec 做的是后者——它可以和现有的扫描器、利用框架、
 /plugin install kaleidosec --marketplace MWDLH/kaleidosec
 ```
 
-装完**新开会话**生效。不想装插件，可用 [`examples/claude-hook/`](examples/claude-hook/) 手动接入；
-也可以把它当普通 skill 用：
+装完**新开会话**生效。之后直接说你要做的事（"帮我渗透这个站" / "看看域控" / "跑个 nmap"），
+模式会自动进入；打开带渗透特征的目录（名称含 pentest / engagement / red-team，或含 `.har` / `.burp` /
+nmap 输出）也会自动进入。想固定某个目录、跨会话续跑，再在目录里放 `.kaleidosec`。
+
+不想装插件，可用 [`examples/claude-hook/`](examples/claude-hook/) 手动接入；也可以把它当普通 skill 用：
 
 ```bash
 git clone https://github.com/MWDLH/kaleidosec.git ~/.claude/skills/kaleidosec
